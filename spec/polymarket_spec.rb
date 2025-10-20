@@ -7,11 +7,11 @@ RSpec.describe Polymarket do
     expect(Polymarket::VERSION).not_to be nil
   end
 
-  describe "Client" do
-    let(:host) { "https://clob.polymarket.com" }
+  describe "CLOBClient" do
+    let(:clob_host) { "https://clob.polymarket.com" }
     let(:chain_id) { 1 }
     let(:private_key) { ENV.fetch("PRIVATE_KEY", "") }
-    let(:client) { Polymarket::Client.new(host: host, chain_id: chain_id, key: private_key) }
+    let(:clob_client) { Polymarket::CLOBClient.new(clob_host: clob_host, chain_id: chain_id, key: private_key) }
 
     describe "#create_order" do
       let(:order_args) do
@@ -35,9 +35,9 @@ RSpec.describe Polymarket do
         # Mock the builder
         mock_builder = double("OrderBuilder")
         allow(mock_builder).to receive(:create_order).and_return({ order: "data" })
-        client.instance_variable_set(:@builder, mock_builder)
+        clob_client.instance_variable_set(:@builder, mock_builder)
         
-        result = client.create_order(order_args)
+        result = clob_client.create_order(order_args)
         expect(result).to eq({ order: "data" })
       end
 
@@ -46,7 +46,7 @@ RSpec.describe Polymarket do
         
         order_args.price = 0.05  # Invalid price for tick size 0.1
         
-        expect { client.create_order(order_args) }.to raise_error(ArgumentError, /Price.*is not valid for tick size/)
+        expect { clob_client.create_order(order_args) }.to raise_error(ArgumentError, /Price.*is not valid for tick size/)
       end
     end
 
@@ -78,11 +78,70 @@ RSpec.describe Polymarket do
         # Mock the builder
         mock_builder = double("OrderBuilder")
         allow(mock_builder).to receive(:create_market_order).and_return({ order: "data" })
-        client.instance_variable_set(:@builder, mock_builder)
+        clob_client.instance_variable_set(:@builder, mock_builder)
         
-        result = client.create_market_order(order_args)
+        result = clob_client.create_market_order(order_args)
         expect(result).to eq({ order: "data" })
       end
+    end
+  end
+
+  describe "GammaClient" do
+    let(:gamma_client) { Polymarket::GammaClient.new }
+
+    it "initializes without parameters" do
+      expect(gamma_client).to be_a(Polymarket::GammaClient)
+      expect(gamma_client.gamma_host).to eq("https://gamma-api.polymarket.com")
+    end
+
+    it "can be created with custom host" do
+      custom_client = Polymarket::GammaClient.new(gamma_host: "https://custom-gamma.polymarket.com")
+      expect(custom_client.gamma_host).to eq("https://custom-gamma.polymarket.com")
+    end
+
+    describe "convenience methods" do
+      it "can be created via Polymarket.gamma_client" do
+        client = Polymarket.gamma_client
+        expect(client).to be_a(Polymarket::GammaClient)
+      end
+    end
+  end
+
+  describe "DataClient" do
+    let(:data_client) { Polymarket::DataClient.new }
+
+    it "initializes without parameters" do
+      expect(data_client).to be_a(Polymarket::DataClient)
+      expect(data_client.data_host).to eq("https://data-api.polymarket.com")
+    end
+
+    it "can be created with custom host" do
+      custom_client = Polymarket::DataClient.new(data_host: "https://custom-data.polymarket.com")
+      expect(custom_client.data_host).to eq("https://custom-data.polymarket.com")
+    end
+
+    describe "convenience methods" do
+      it "can be created via Polymarket.data_client" do
+        client = Polymarket.data_client
+        expect(client).to be_a(Polymarket::DataClient)
+      end
+    end
+  end
+
+  describe "convenience methods" do
+    it "can create CLOB client via Polymarket.clob_client" do
+      client = Polymarket.clob_client(chain_id: 1)
+      expect(client).to be_a(Polymarket::CLOBClient)
+    end
+
+    it "can create Gamma client via Polymarket.gamma_client" do
+      client = Polymarket.gamma_client
+      expect(client).to be_a(Polymarket::GammaClient)
+    end
+
+    it "can create Data client via Polymarket.data_client" do
+      client = Polymarket.data_client
+      expect(client).to be_a(Polymarket::DataClient)
     end
   end
 end

@@ -28,70 +28,82 @@ Below is a comprehensive usage guide for the Polymarket gem. This client support
 
 #### Basic Setup
 
-First, require the gem and initialize a client:
+First, require the gem and initialize clients:
 
 ```ruby
 require 'polymarket'
 
-# Initialize with host URL (use appropriate environment)
-client = Polymarket::Client.new(
-  host: 'https://clob.polymarket.com',  # Production
-  # host: 'https://clob-staging.polymarket.com',  # Staging
+# Initialize CLOB client for trading operations
+clob_client = Polymarket::CLOBClient.new(
+  clob_host: 'https://clob.polymarket.com',  # Production
+  # clob_host: 'https://clob-staging.polymarket.com',  # Staging
   chain_id: Polymarket::Constants::POLYGON  # 137 for Polygon mainnet
 )
+
+# Initialize Gamma client for market data (no parameters required)
+gamma_client = Polymarket::GammaClient.new
+
+# Initialize Data client for data API (no parameters required)
+data_client = Polymarket::DataClient.new
+
+# Or use convenience methods
+clob_client = Polymarket.clob_client(chain_id: Polymarket::Constants::POLYGON)
+gamma_client = Polymarket.gamma_client
+data_client = Polymarket.data_client
 ```
 
-#### Authentication
+#### Authentication (CLOB Client)
 
-The client supports two authentication levels:
+The CLOB client supports two authentication levels:
 
 **Level 1 Authentication (Private Key)**
 ```ruby
 # Initialize with private key for Level 1 auth
-client = Polymarket::Client.new(
-  host: 'https://clob.polymarket.com',
+clob_client = Polymarket::CLOBClient.new(
+  clob_host: 'https://clob.polymarket.com',
   chain_id: Polymarket::Constants::POLYGON,
   key: 'your_private_key_here'  # 0x-prefixed private key
 )
 
 # Get your wallet address
-address = client.get_address
+address = clob_clob_client.get_address
 puts "Wallet address: #{address}"
 ```
 
 **Level 2 Authentication (API Credentials)**
 ```ruby
 # Create API credentials (requires Level 1 auth first)
-creds = client.create_api_key
+creds = clob_clob_client.create_api_key
 puts Polymarket::Constants::CREDENTIAL_CREATION_WARNING
 puts "API Key: #{creds.api_key}"
 puts "Secret: #{creds.api_secret}"
 puts "Passphrase: #{creds.api_passphrase}"
 
 # Set credentials for Level 2 auth
-client.set_api_creds(creds)
+clob_clob_client.set_api_creds(creds)
 ```
 
 #### Market Data
 
+**CLOB Client - Trading Data**
 Get market information and pricing data:
 
 ```ruby
 # Get all markets
-markets = client.get_markets
+markets = clob_clob_client.get_markets
 puts "Available markets: #{markets}"
 
 # Get order book for a specific token
 token_id = "0x1234567890abcdef..."  # Replace with actual token ID
-order_book = client.get_order_book(token_id)
+order_book = clob_client.get_order_book(token_id)
 puts "Order book: #{order_book}"
 
 # Get current price for a token
-price_response = client.get_price(token_id, "BUY")
+price_response = clob_client.get_price(token_id, "BUY")
 puts "Current buy price: #{price_response.body}"
 
 # Get spread information
-spread_response = client.get_spread(token_id)
+spread_response = clob_client.get_spread(token_id)
 puts "Spread: #{spread_response.body}"
 ```
 
@@ -111,7 +123,7 @@ order_args = Polymarket::OrderArgs.new(
 )
 
 # Create and post the order
-order = client.create_and_post_order(order_args)
+order = clob_client.create_and_post_order(order_args)
 puts "Order created: #{order}"
 ```
 
@@ -126,7 +138,7 @@ market_order_args = Polymarket::MarketOrderArgs.new(
 )
 
 # Create and post market order
-market_order = client.create_and_post_order(market_order_args)
+market_order = clob_client.create_and_post_order(market_order_args)
 puts "Market order created: #{market_order}"
 ```
 
@@ -134,32 +146,112 @@ puts "Market order created: #{market_order}"
 
 ```ruby
 # Get your open orders
-orders = client.get_orders
+orders = clob_client.get_orders
 puts "Open orders: #{orders}"
 
 # Get specific order details
 order_id = "your_order_id"
-order_details = client.get_order(order_id)
+order_details = clob_client.get_order(order_id)
 puts "Order details: #{order_details}"
 
 # Cancel a specific order
-cancel_response = client.cancel(order_id)
+cancel_response = clob_client.cancel(order_id)
 puts "Cancel response: #{cancel_response}"
 
 # Cancel all orders
-cancel_all_response = client.cancel_all
+cancel_all_response = clob_client.cancel_all
 puts "Cancel all response: #{cancel_all_response}"
+```
+
+**Gamma Client - Market Data**
+The Gamma client provides access to market data without requiring authentication:
+
+```ruby
+# Initialize Gamma client (no parameters required)
+gamma_client = Polymarket::GammaClient.new
+
+# Get all markets
+markets = gamma_client.get_markets
+puts "Available markets: #{markets}"
+
+# Get specific market details
+market_id = "0x1234567890abcdef..."  # Replace with actual market ID
+market = gamma_client.get_market(market_id)
+puts "Market details: #{market}"
+
+# Get market activity
+activity = gamma_client.get_market_activity(market_id)
+puts "Market activity: #{activity}"
+
+# Get market trades
+trades = gamma_client.get_market_trades(market_id)
+puts "Market trades: #{trades}"
+
+# Get market stats
+stats = gamma_client.get_market_stats(market_id)
+puts "Market stats: #{stats}"
+```
+
+**Data Client - Data API**
+The Data client provides access to comprehensive market and event data without requiring authentication:
+
+```ruby
+# Initialize Data client (no parameters required)
+data_client = Polymarket::DataClient.new
+
+# Get all markets
+markets = data_client.get_markets
+puts "Available markets: #{markets}"
+
+# Get specific market details
+market_id = "0x1234567890abcdef..."  # Replace with actual market ID
+market = data_client.get_market(market_id)
+puts "Market details: #{market}"
+
+# Get market activity
+activity = data_client.get_market_activity(market_id)
+puts "Market activity: #{activity}"
+
+# Get market trades
+trades = data_client.get_market_trades(market_id)
+puts "Market trades: #{trades}"
+
+# Get market stats
+stats = data_client.get_market_stats(market_id)
+puts "Market stats: #{stats}"
+
+# Get all events
+events = data_client.get_events
+puts "Available events: #{events}"
+
+# Get specific event details
+event_id = "0xabcdef1234567890..."  # Replace with actual event ID
+event = data_client.get_event(event_id)
+puts "Event details: #{event}"
+
+# Get event activity
+event_activity = data_client.get_event_activity(event_id)
+puts "Event activity: #{event_activity}"
+
+# Get activity with optional parameters
+activity = data_client.get_activity(
+  user: "0x1234567890abcdef...",  # Optional: filter by user
+  market: "0xabcdef1234567890...", # Optional: filter by market
+  limit: 50,                       # Optional: limit results
+  offset: 0                        # Optional: pagination offset
+)
+puts "Activity: #{activity}"
 ```
 
 #### Trading History
 
 ```ruby
 # Get your trade history
-trades = client.get_trades
+trades = clob_client.get_trades
 puts "Trade history: #{trades}"
 
 # Get last trade price for a token
-last_trade = client.get_last_trade_price(token_id)
+last_trade = clob_client.get_last_trade_price(token_id)
 puts "Last trade price: #{last_trade.body}"
 ```
 
@@ -168,12 +260,12 @@ puts "Last trade price: #{last_trade.body}"
 ```ruby
 # Check balance and allowance (requires Level 2 auth)
 # Note: This feature is currently under development
-balance = client.get_balance_allowance
+balance = clob_client.get_balance_allowance
 puts "Balance and allowance: #{balance}"
 
 # Update allowance (requires Level 2 auth)
 # Note: This feature is currently under development
-update_response = client.update_balance_allowance
+update_response = clob_client.update_balance_allowance
 puts "Allowance update: #{update_response}"
 ```
 
@@ -186,14 +278,14 @@ require 'polymarket'
 
 # Initialize client with private key
 client = Polymarket::Client.new(
-  host: 'https://clob.polymarket.com',
+  clob_host: 'https://clob.polymarket.com',
   chain_id: Polymarket::Constants::POLYGON,
   key: 'your_private_key_here'
 )
 
 # Get market data
 token_id = "0x1234567890abcdef..."  # Replace with actual token ID
-order_book = client.get_order_book(token_id)
+order_book = clob_client.get_order_book(token_id)
 puts "Order book retrieved"
 
 # Place a limit order
@@ -207,12 +299,12 @@ order_args = Polymarket::OrderArgs.new(
   expiration: Time.now.to_i + 3600
 )
 
-order = client.create_and_post_order(order_args)
+order = clob_client.create_and_post_order(order_args)
 puts "Order placed successfully: #{order}"
 
 # Monitor the order
 sleep(5)
-orders = client.get_orders
+orders = clob_client.get_orders
 puts "Current orders: #{orders}"
 ```
 
@@ -222,7 +314,7 @@ The client includes comprehensive error handling:
 
 ```ruby
 begin
-  order = client.create_and_post_order(order_args)
+  order = clob_client.create_and_post_order(order_args)
   puts "Order successful: #{order}"
 rescue Polymarket::Error => e
   puts "CLOB error: #{e.message}"

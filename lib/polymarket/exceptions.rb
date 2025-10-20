@@ -5,7 +5,7 @@ module Polymarket
     # TODO: Port exceptions from Python exceptions.py
   end
 
-  class PolyException < StandardError
+  class PolymarketException < StandardError
     attr_reader :msg
     def initialize(msg)
       @msg = msg
@@ -13,7 +13,7 @@ module Polymarket
     end
   end
 
-  class PolyApiException < PolyException
+  class PolymarketApiException < PolymarketException
     attr_reader :status_code, :error_msg
     def initialize(resp = nil, error_msg = nil)
       if resp
@@ -28,7 +28,7 @@ module Polymarket
     end
 
     def to_s
-      "PolyApiException[status_code=#{@status_code}, error_message=#{@error_msg}]"
+      "PolymarketApiException[status_code=#{@status_code}, error_message=#{@error_msg}]"
     end
   end
 end 

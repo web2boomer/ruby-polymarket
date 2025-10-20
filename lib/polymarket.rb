@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
 require_relative "polymarket/version"
-require_relative "polymarket/client"
+require_relative "polymarket/clob_client"
+require_relative "polymarket/gamma_client"
+require_relative "polymarket/data_client"
 require_relative "polymarket/clob_types"
-require_relative "polymarket/config"
 require_relative "polymarket/constants"
-require_relative "polymarket/endpoints"
+require_relative "polymarket/clob_endpoints"
+require_relative "polymarket/gamma_endpoints"
+require_relative "polymarket/data_endpoints"
 require_relative "polymarket/exceptions"
 require_relative "polymarket/headers"
 require_relative "polymarket/http_helpers"
@@ -16,5 +19,17 @@ require_relative "polymarket/utilities"
 
 module Polymarket
   class Error < StandardError; end
-  # Your code goes here...
+  
+  # Convenience methods for creating clients
+  def self.clob_client(**options)
+    CLOBClient.new(**options)
+  end
+  
+  def self.gamma_client(**options)
+    GammaClient.new(**options)
+  end
+  
+  def self.data_client(**options)
+    DataClient.new(**options)
+  end
 end

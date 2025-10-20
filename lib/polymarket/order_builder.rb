@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'bigdecimal'
 require 'securerandom'
-require_relative 'config'
+require_relative 'clob_config'
 
 module Polymarket
   module OrderBuilderConstants
@@ -117,7 +117,7 @@ module Polymarket
       puts  "[DEBUG] salt: #{salt}" 
 
       # Get contract config for domain (for verifyingContract)
-      contract_config = Polymarket::Config.get_contract_config(@signer.get_chain_id , neg_risk)
+      contract_config = Polymarket::CLOBConfig.get_contract_config(@signer.get_chain_id , neg_risk)
       puts  "[DEBUG] contract_config: #{contract_config.inspect}" 
       puts "[DEBUG] exchange: #{contract_config.exchange}"
 
