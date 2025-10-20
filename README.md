@@ -1,10 +1,11 @@
 # Polymarket gem
 
-Ruby client for the Polymarket. 
+Ruby client for Polymarket, including the CLOB, Gamma and Data APIs. 
 
 Full API documentation can be found [here](https://docs.polymarket.com/quickstart/introduction/main). 
 
-It's a work in progress, not every part of the client has been tested. But you can place orders so wen lambo? 
+It's a work in progress, not every end point is tested. 
+
 
 ### Installation
 
@@ -16,17 +17,9 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
     $ gem install 'ruby-polymarket'
 
-### Requisites
 
-#### Allowances
 
-See guidance on [py-polymarket](https://github.com/Polymarket/py-polymarket).
-
-### Usage
-
-Below is a comprehensive usage guide for the Polymarket gem. This client supports both Level 1 (private key) and Level 2 (API credentials) authentication modes.
-
-#### Basic Setup
+### Basic Setup
 
 First, require the gem and initialize clients:
 
@@ -52,6 +45,105 @@ gamma_client = Polymarket.gamma_client
 data_client = Polymarket.data_client
 ```
 
+
+
+
+## Gamma Client - Data API
+
+The Gamma client provides access to market data without requiring authentication:
+
+```ruby
+# Initialize Gamma client (no parameters required)
+gamma_client = Polymarket::GammaClient.new
+
+# Get all markets
+markets = gamma_client.get_markets
+puts "Available markets: #{markets}"
+
+# Get specific market details
+market_id = "0x1234567890abcdef..."  # Replace with actual market ID
+market = gamma_client.get_market(market_id)
+puts "Market details: #{market}"
+
+# Get market activity
+activity = gamma_client.get_market_activity(market_id)
+puts "Market activity: #{activity}"
+
+# Get market trades
+trades = gamma_client.get_market_trades(market_id)
+puts "Market trades: #{trades}"
+
+# Get market stats
+stats = gamma_client.get_market_stats(market_id)
+puts "Market stats: #{stats}"
+```
+
+
+
+## Data Client - Data API
+
+The Data client provides access to comprehensive market and event data without requiring authentication:
+
+```ruby
+# Initialize Data client (no parameters required)
+data_client = Polymarket::DataClient.new
+
+# Get all markets
+markets = data_client.get_markets
+puts "Available markets: #{markets}"
+
+# Get specific market details
+market_id = "0x1234567890abcdef..."  # Replace with actual market ID
+market = data_client.get_market(market_id)
+puts "Market details: #{market}"
+
+# Get market activity
+activity = data_client.get_market_activity(market_id)
+puts "Market activity: #{activity}"
+
+# Get market trades
+trades = data_client.get_market_trades(market_id)
+puts "Market trades: #{trades}"
+
+# Get market stats
+stats = data_client.get_market_stats(market_id)
+puts "Market stats: #{stats}"
+
+# Get all events
+events = data_client.get_events
+puts "Available events: #{events}"
+
+# Get specific event details
+event_id = "0xabcdef1234567890..."  # Replace with actual event ID
+event = data_client.get_event(event_id)
+puts "Event details: #{event}"
+
+# Get event activity
+event_activity = data_client.get_event_activity(event_id)
+puts "Event activity: #{event_activity}"
+
+# Get activity with optional parameters
+activity = data_client.get_activity(
+  user: "0x1234567890abcdef...",  # Optional: filter by user
+  market: "0xabcdef1234567890...", # Optional: filter by market
+  limit: 50,                       # Optional: limit results
+  offset: 0                        # Optional: pagination offset
+)
+puts "Activity: #{activity}"
+```
+
+## CLOB client
+
+### Allowances
+
+See guidance on [py-polymarket](https://github.com/Polymarket/py-polymarket).
+
+### Usage
+
+Below is a comprehensive usage guide for the Polymarket gem. This client supports both Level 1 (private key) and Level 2 (API credentials) authentication modes.
+
+
+
 #### Authentication (CLOB Client)
 
 The CLOB client supports two authentication levels:
@@ -66,21 +158,21 @@ clob_client = Polymarket::CLOBClient.new(
 )
 
 # Get your wallet address
-address = clob_clob_client.get_address
+address = clob_client.get_address
 puts "Wallet address: #{address}"
 ```
 
 **Level 2 Authentication (API Credentials)**
 ```ruby
 # Create API credentials (requires Level 1 auth first)
-creds = clob_clob_client.create_api_key
+creds = clob_client.create_api_key
 puts Polymarket::Constants::CREDENTIAL_CREATION_WARNING
 puts "API Key: #{creds.api_key}"
 puts "Secret: #{creds.api_secret}"
 puts "Passphrase: #{creds.api_passphrase}"
 
 # Set credentials for Level 2 auth
-clob_clob_client.set_api_creds(creds)
+clob_client.set_api_creds(creds)
 ```
 
 #### Market Data
@@ -90,11 +182,10 @@ Get market information and pricing data:
 
 ```ruby
 # Get all markets
-markets = clob_clob_client.get_markets
+markets = clob_client.get_markets
 puts "Available markets: #{markets}"
 
 # Get order book for a specific token
-token_id = "0x1234567890abcdef..."  # Replace with actual token ID
 order_book = clob_client.get_order_book(token_id)
 puts "Order book: #{order_book}"
 
@@ -163,97 +254,7 @@ cancel_all_response = clob_client.cancel_all
 puts "Cancel all response: #{cancel_all_response}"
 ```
 
-**Gamma Client - Market Data**
-The Gamma client provides access to market data without requiring authentication:
 
-```ruby
-# Initialize Gamma client (no parameters required)
-gamma_client = Polymarket::GammaClient.new
-
-# Get all markets
-markets = gamma_client.get_markets
-puts "Available markets: #{markets}"
-
-# Get specific market details
-market_id = "0x1234567890abcdef..."  # Replace with actual market ID
-market = gamma_client.get_market(market_id)
-puts "Market details: #{market}"
-
-# Get market activity
-activity = gamma_client.get_market_activity(market_id)
-puts "Market activity: #{activity}"
-
-# Get market trades
-trades = gamma_client.get_market_trades(market_id)
-puts "Market trades: #{trades}"
-
-# Get market stats
-stats = gamma_client.get_market_stats(market_id)
-puts "Market stats: #{stats}"
-```
-
-**Data Client - Data API**
-The Data client provides access to comprehensive market and event data without requiring authentication:
-
-```ruby
-# Initialize Data client (no parameters required)
-data_client = Polymarket::DataClient.new
-
-# Get all markets
-markets = data_client.get_markets
-puts "Available markets: #{markets}"
-
-# Get specific market details
-market_id = "0x1234567890abcdef..."  # Replace with actual market ID
-market = data_client.get_market(market_id)
-puts "Market details: #{market}"
-
-# Get market activity
-activity = data_client.get_market_activity(market_id)
-puts "Market activity: #{activity}"
-
-# Get market trades
-trades = data_client.get_market_trades(market_id)
-puts "Market trades: #{trades}"
-
-# Get market stats
-stats = data_client.get_market_stats(market_id)
-puts "Market stats: #{stats}"
-
-# Get all events
-events = data_client.get_events
-puts "Available events: #{events}"
-
-# Get specific event details
-event_id = "0xabcdef1234567890..."  # Replace with actual event ID
-event = data_client.get_event(event_id)
-puts "Event details: #{event}"
-
-# Get event activity
-event_activity = data_client.get_event_activity(event_id)
-puts "Event activity: #{event_activity}"
-
-# Get activity with optional parameters
-activity = data_client.get_activity(
-  user: "0x1234567890abcdef...",  # Optional: filter by user
-  market: "0xabcdef1234567890...", # Optional: filter by market
-  limit: 50,                       # Optional: limit results
-  offset: 0                        # Optional: pagination offset
-)
-puts "Activity: #{activity}"
-```
-
-#### Trading History
-
-```ruby
-# Get your trade history
-trades = clob_client.get_trades
-puts "Trade history: #{trades}"
-
-# Get last trade price for a token
-last_trade = clob_client.get_last_trade_price(token_id)
-puts "Last trade price: #{last_trade.body}"
-```
 
 #### Balance and Allowances
 
@@ -332,8 +333,24 @@ end
 5. **Security**: Keep your private keys and API credentials secure
 6. **Development Status**: This gem is currently in development. Some features may be incomplete or subject to change
 
+
+#### Trading History
+
+```ruby
+# Get your trade history
+trades = clob_client.get_trades
+puts "Trade history: #{trades}"
+
+# Get last trade price for a token
+last_trade = clob_client.get_last_trade_price(token_id)
+puts "Last trade price: #{last_trade.body}"
+```
+
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+
+## With all that done... Wen Lambo?
