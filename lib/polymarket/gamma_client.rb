@@ -39,12 +39,12 @@ module Polymarket
     end
 
     def get_event(event_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_EVENT}/#{event_id}")
+      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_EVENTS}/#{event_id}")
       response = Net::HTTP.get_response(uri)
       if response.is_a?(Net::HTTPSuccess)
         JSON.parse(response.body)
       else
-        raise "Couldn't get event: #{response.body}"
+        raise "Couldn't get event with id #{event_id}: #{response.body}"
         nil
       end
     end
@@ -55,7 +55,7 @@ module Polymarket
       if response.is_a?(Net::HTTPSuccess)
         JSON.parse(response.body)
       else
-        raise "Couldn't get event by slug: #{response.body}"
+        raise "Couldn't get event with slug #{event_slug}: #{response.body}"
         nil
       end
     end
@@ -78,7 +78,7 @@ module Polymarket
       if response.is_a?(Net::HTTPSuccess)
         JSON.parse(response.body)
       else
-        raise "Couldn't get market: #{response.body}"
+        raise "Couldn't get market with id #{market_id}: #{response.body}"
         nil
       end
     end      
@@ -89,7 +89,7 @@ module Polymarket
       if response.is_a?(Net::HTTPSuccess)
         JSON.parse(response.body)
       else
-        raise "Couldn't get market by slug: #{response.body}"
+        raise "Couldn't get market with slug #{market_slug}: #{response.body}"
         nil
       end
     end
