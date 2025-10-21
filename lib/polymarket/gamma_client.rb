@@ -14,20 +14,6 @@ module Polymarket
       @gamma_host = gamma_host.end_with?('/') ? gamma_host[0..-2] : gamma_host
     end
 
-    # Gamma API methods will be implemented here
-    # These are placeholder methods for future implementation
-    
-    def get_markets
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKETS}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get markets: #{response.body}"
-        nil
-      end
-    end
-
     def get_events(limit: nil, offset: nil, order: nil, ascending: nil, id: nil, slug: nil, start_date_min: nil, start_date_max: nil, end_date_min: nil, end_date_max: nil)
       params = {}
       params[:limit] = limit if limit
@@ -52,6 +38,40 @@ module Polymarket
       end
     end
 
+    def get_event(event_id)
+      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_EVENT}/#{event_id}")
+      response = Net::HTTP.get_response(uri)
+      if response.is_a?(Net::HTTPSuccess)
+        JSON.parse(response.body)
+      else
+        raise "Couldn't get event: #{response.body}"
+        nil
+      end
+    end
+
+    def get_event_by_slug(event_slug)
+      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_EVENT_BY_SLUG}/#{event_slug}")
+      response = Net::HTTP.get_response(uri)
+      if response.is_a?(Net::HTTPSuccess)
+        JSON.parse(response.body)
+      else
+        raise "Couldn't get event by slug: #{response.body}"
+        nil
+      end
+    end
+    
+    def get_markets
+      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKETS}")
+      response = Net::HTTP.get_response(uri)
+      if response.is_a?(Net::HTTPSuccess)
+        JSON.parse(response.body)
+      else
+        raise "Couldn't get markets: #{response.body}"
+        nil
+      end
+    end
+
+
     def get_market(market_id)
       uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET}/#{market_id}")
       response = Net::HTTP.get_response(uri)
@@ -61,7 +81,7 @@ module Polymarket
         raise "Couldn't get market: #{response.body}"
         nil
       end
-    end
+    end      
 
     def get_market_by_slug(market_slug)
       uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_BY_SLUG}/#{market_slug}")
