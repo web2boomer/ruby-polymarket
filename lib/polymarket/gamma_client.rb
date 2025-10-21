@@ -28,8 +28,21 @@ module Polymarket
       end
     end
 
-    def get_events
+    def get_events(limit: nil, offset: nil, order: nil, ascending: nil, id: nil, slug: nil, start_date_min: nil, start_date_max: nil, end_date_min: nil, end_date_max: nil)
+      params = {}
+      params[:limit] = limit if limit
+      params[:offset] = offset if offset
+      params[:order] = order if order
+      params[:ascending] = ascending unless ascending.nil?
+      params[:id] = id if id
+      params[:slug] = slug if slug
+      params[:start_date_min] = start_date_min if start_date_min
+      params[:start_date_max] = start_date_max if start_date_max
+      params[:end_date_min] = end_date_min if end_date_min
+      params[:end_date_max] = end_date_max if end_date_max
+
       uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_EVENTS}")
+      uri.query = URI.encode_www_form(params) unless params.empty?
       response = Net::HTTP.get_response(uri)
       if response.is_a?(Net::HTTPSuccess)
         JSON.parse(response.body)
@@ -50,279 +63,16 @@ module Polymarket
       end
     end
 
-    def get_market_details(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_DETAILS}/#{market_id}")
+    def get_market_by_slug(market_slug)
+      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_BY_SLUG}/#{market_slug}")
       response = Net::HTTP.get_response(uri)
       if response.is_a?(Net::HTTPSuccess)
         JSON.parse(response.body)
       else
-        raise "Couldn't get market details: #{response.body}"
+        raise "Couldn't get market by slug: #{response.body}"
         nil
       end
     end
 
-    def get_market_activity(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_ACTIVITY}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market activity: #{response.body}"
-        nil
-      end
-    end
-
-    def get_market_trades(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_TRADES}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market trades: #{response.body}"
-        nil
-      end
-    end
-
-    def get_market_orders(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_ORDERS}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market orders: #{response.body}"
-        nil
-      end
-    end
-
-    def get_market_stats(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_STATS}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market stats: #{response.body}"
-        nil
-      end
-    end
-
-    def get_market_history(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_HISTORY}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market history: #{response.body}"
-        nil
-      end
-    end
-
-    def get_market_outcomes(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_OUTCOMES}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market outcomes: #{response.body}"
-        nil
-      end
-    end
-
-    def get_market_conditions(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_CONDITIONS}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market conditions: #{response.body}"
-        nil
-      end
-    end
-
-    def get_market_resolution(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_RESOLUTION}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market resolution: #{response.body}"
-        nil
-      end
-    end
-
-    def get_market_volume(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_VOLUME}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market volume: #{response.body}"
-        nil
-      end
-    end
-
-    def get_market_liquidity(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_LIQUIDITY}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market liquidity: #{response.body}"
-        nil
-      end
-    end
-
-    def get_market_orderbook(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_ORDERBOOK}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market orderbook: #{response.body}"
-        nil
-      end
-    end
-
-    def get_market_prices(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_PRICES}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market prices: #{response.body}"
-        nil
-      end
-    end
-
-    def get_market_spreads(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_SPREADS}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market spreads: #{response.body}"
-        nil
-      end
-    end
-
-    def get_market_midpoints(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_MIDPOINTS}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market midpoints: #{response.body}"
-        nil
-      end
-    end
-
-    def get_market_last_trades(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_LAST_TRADES}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market last trades: #{response.body}"
-        nil
-      end
-    end
-
-    def get_market_tick_sizes(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_TICK_SIZES}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market tick sizes: #{response.body}"
-        nil
-      end
-    end
-
-    def get_market_neg_risk(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_NEG_RISK}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market neg risk: #{response.body}"
-        nil
-      end
-    end
-
-    def get_market_notifications(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_NOTIFICATIONS}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market notifications: #{response.body}"
-        nil
-      end
-    end
-
-    def get_market_balance(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_BALANCE}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market balance: #{response.body}"
-        nil
-      end
-    end
-
-    def get_market_allowance(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_ALLOWANCE}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market allowance: #{response.body}"
-        nil
-      end
-    end
-
-    def get_market_scoring(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_SCORING}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market scoring: #{response.body}"
-        nil
-      end
-    end
-
-    def get_market_sampling(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_SAMPLING}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market sampling: #{response.body}"
-        nil
-      end
-    end
-
-    def get_market_simplified(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_SIMPLIFIED}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market simplified: #{response.body}"
-        nil
-      end
-    end
-
-    def get_market_live_activity(market_id)
-      uri = URI.parse("#{@gamma_host}#{GammaEndpoints::GET_MARKET_LIVE_ACTIVITY}/#{market_id}")
-      response = Net::HTTP.get_response(uri)
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        raise "Couldn't get market live activity: #{response.body}"
-        nil
-      end
-    end
   end
 end
