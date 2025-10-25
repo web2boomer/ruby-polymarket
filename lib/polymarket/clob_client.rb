@@ -11,7 +11,7 @@ module Polymarket
   class CLOBClient
     attr_reader :clob_host, :gamma_host, :chain_id, :signer, :creds, :mode, :builder
 
-    def initialize(clob_host: Constants::DEFAULT_CLOB_HOST, gamma_host: Constants::DEFAULT_GAMMA_HOST, chain_id: Constants::POLYGON, key: nil, creds: nil, signature_type: nil, funder: nil)
+    def initialize(clob_host: Constants::DEFAULT_CLOB_HOST, chain_id: Constants::POLYGON, key: nil, creds: nil, signature_type: nil, funder: nil)
       # Remove trailing slash from hosts
       @clob_host = clob_host.end_with?('/') ? clob_host[0..-2] : clob_host
       @gamma_host = gamma_host.end_with?('/') ? gamma_host[0..-2] : gamma_host
