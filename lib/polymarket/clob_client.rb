@@ -659,6 +659,24 @@ module Polymarket
       end
     end
 
+    # Fetch historical price data for a token.
+    # token_id: the asset/token ID (NOT condition_id)
+    # interval: "max", "all", "1m", "1w", "1d", "6h", "1h"
+    # fidelity: accuracy in minutes (1440 = daily)
+    # start_ts/end_ts: optional unix timestamp bounds
+    def get_prices_history(token_id, interval: "max", fidelity: 1440, start_ts: nil, end_ts: nil)
+      params = ["market=#{token_id}", "interval=#{interval}", "fidelity=#{fidelity}"]
+      params << "startTs=#{start_ts.to_i}" if start_ts
+      params << "endTs=#{end_ts.to_i}" if end_ts
+      uri = URI.parse("#{@clob_host}#{CLOBEndpoints::GET_PRICES_HISTORY}?#{params.join('&')}")
+      response = Net::HTTP.get_response(uri)
+      if response.is_a?(Net::HTTPSuccess)
+        JSON.parse(response.body)
+      else
+        raise "Couldn't get prices history for #{token_id}: #{response.body}"
+      end
+    end
+
     def get_market_trades_events(condition_id)
       uri = URI.parse("#{@clob_host}#{CLOBEndpoints::GET_MARKET_TRADES_EVENTS}#{condition_id}")
       response = Net::HTTP.get_response(uri)

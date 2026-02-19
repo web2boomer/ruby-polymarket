@@ -4,6 +4,7 @@ require_relative "polymarket/version"
 require_relative "polymarket/clob_client"
 require_relative "polymarket/gamma_client"
 require_relative "polymarket/data_client"
+require_relative "polymarket/ctf_client"
 require_relative "polymarket/clob_types"
 require_relative "polymarket/constants"
 require_relative "polymarket/clob_endpoints"
@@ -31,5 +32,9 @@ module Polymarket
   
   def self.data_client(**options)
     DataClient.new(**options)
+  end
+  
+  def self.ctf_client(**options)
+    CTFClient.new(**options)
   end
 end

@@ -28,8 +28,7 @@ require 'polymarket'
 
 # Initialize CLOB client for trading operations
 clob_client = Polymarket::CLOBClient.new(
-  clob_host: 'https://clob.polymarket.com',  # Production
-  # clob_host: 'https://clob-staging.polymarket.com',  # Staging
+  clob_host: 'https://clob.polymarket.com', 
   chain_id: Polymarket::Constants::POLYGON  # 137 for Polygon mainnet
 )
 

@@ -42,5 +42,6 @@ module Polymarket
     GET_MARKETS = "/markets"
     GET_MARKET = "/markets/"
     GET_MARKET_TRADES_EVENTS = "/live-activity/events/"
+    GET_PRICES_HISTORY = "/prices-history"
   end
 end
