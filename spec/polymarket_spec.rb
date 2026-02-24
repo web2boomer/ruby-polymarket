@@ -10,7 +10,8 @@ RSpec.describe Polymarket do
   describe "CLOBClient" do
     let(:clob_host) { "https://clob.polymarket.com" }
     let(:chain_id) { 1 }
-    let(:private_key) { ENV.fetch("PRIVATE_KEY", "") }
+    # Use a valid 32-byte hex private key (64 hex chars = 32 bytes)
+    let(:private_key) { ENV.fetch("PRIVATE_KEY", "0x" + "1" * 64) }
     let(:clob_client) { Polymarket::CLOBClient.new(clob_host: clob_host, chain_id: chain_id, key: private_key) }
 
     describe "#create_order" do
@@ -29,8 +30,8 @@ RSpec.describe Polymarket do
 
       it "creates an order with proper validation" do
         # Mock the tick_size and neg_risk methods
-        allow(client).to receive(:get_tick_size).and_return("0.1")
-        allow(client).to receive(:get_neg_risk).and_return(false)
+        allow(clob_client).to receive(:get_tick_size).and_return("0.1")
+        allow(clob_client).to receive(:get_neg_risk).and_return(false)
         
         # Mock the builder
         mock_builder = double("OrderBuilder")
@@ -42,7 +43,7 @@ RSpec.describe Polymarket do
       end
 
       it "raises error for invalid price" do
-        allow(client).to receive(:get_tick_size).and_return("0.1")
+        allow(clob_client).to receive(:get_tick_size).and_return("0.1")
         
         order_args.price = 0.05  # Invalid price for tick size 0.1
         
@@ -66,14 +67,14 @@ RSpec.describe Polymarket do
 
       it "creates a market order with price fetching" do
         # Mock the tick_size and neg_risk methods
-        allow(client).to receive(:get_tick_size).and_return("0.1")
-        allow(client).to receive(:get_neg_risk).and_return(false)
+        allow(clob_client).to receive(:get_tick_size).and_return("0.1")
+        allow(clob_client).to receive(:get_neg_risk).and_return(false)
         
         # Mock the price response
         mock_response = double("Net::HTTPSuccess")
         allow(mock_response).to receive(:is_a?).with(Net::HTTPSuccess).and_return(true)
         allow(mock_response).to receive(:body).and_return('{"price": 0.5}')
-        allow(client).to receive(:get_price).and_return(mock_response)
+        allow(clob_client).to receive(:get_price).and_return(mock_response)
         
         # Mock the builder
         mock_builder = double("OrderBuilder")

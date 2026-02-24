@@ -28,10 +28,6 @@ module Polymarket
         
         # puts  "[HMAC DEBUG] Generated signature: #{signature}" 
         
-        # INSERT_YOUR_CODE
-        puts caller
-        exit
-        
         signature
       end
     end
