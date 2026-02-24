@@ -15,6 +15,38 @@ module Polymarket
     end
 
 
+    def get_positions(user:, limit: nil, offset: nil)
+      params = { user: user }
+      params[:limit] = limit if limit
+      params[:offset] = offset if offset
+
+      uri = URI.parse("#{@data_host}#{DataEndpoints::GET_POSITIONS}")
+      uri.query = URI.encode_www_form(params)
+
+      response = Net::HTTP.get_response(uri)
+      if response.is_a?(Net::HTTPSuccess)
+        JSON.parse(response.body)
+      else
+        raise "Couldn't get positions: #{response.body}"
+      end
+    end
+
+    def get_closed_positions(user:, limit: nil, offset: nil)
+      params = { user: user }
+      params[:limit] = limit if limit
+      params[:offset] = offset if offset
+
+      uri = URI.parse("#{@data_host}#{DataEndpoints::GET_CLOSED_POSITIONS}")
+      uri.query = URI.encode_www_form(params)
+
+      response = Net::HTTP.get_response(uri)
+      if response.is_a?(Net::HTTPSuccess)
+        JSON.parse(response.body)
+      else
+        raise "Couldn't get closed positions: #{response.body}"
+      end
+    end
+
     def get_activity(user: , market: nil, event_id: nil, limit: nil, offset: nil, type: nil)
       # Build query parameters
       params = {}
