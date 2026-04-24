@@ -47,8 +47,9 @@ module Polymarket
       end
     end
 
-    def get_activity(user: , market: nil, event_id: nil, limit: nil, offset: nil, type: nil)
-      # Build query parameters
+    # `end_time` maps to the `end` query param (`end` is reserved in Ruby).
+    def get_activity(user:, market: nil, event_id: nil, limit: nil, offset: nil, type: nil,
+                     start: nil, end_time: nil, sort_direction: nil)
       params = {}
       params[:user] = user if user
       params[:market] = market if market
@@ -56,17 +57,18 @@ module Polymarket
       params[:offset] = offset if offset
       params[:event_id] = event_id if event_id
       params[:type] = type if type
-      
-      # Build URI with query parameters
+      params[:start] = start if start
+      params[:end] = end_time if end_time
+      params[:sortDirection] = sort_direction if sort_direction
+
       uri = URI.parse("#{@data_host}#{DataEndpoints::GET_ACTIVITY}")
       uri.query = URI.encode_www_form(params) unless params.empty?
-      
+
       response = Net::HTTP.get_response(uri)
       if response.is_a?(Net::HTTPSuccess)
         JSON.parse(response.body)
       else
         raise "Couldn't get activity: #{response.body}"
-        nil
       end
     end
 

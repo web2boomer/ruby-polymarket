@@ -9,7 +9,7 @@ RSpec.describe Polymarket do
 
   describe "CLOBClient" do
     let(:clob_host) { "https://clob.polymarket.com" }
-    let(:chain_id) { 1 }
+    let(:chain_id) { 137 } # Use a valid chain_id (Polygon mainnet)
     # Use a valid 32-byte hex private key (64 hex chars = 32 bytes)
     let(:private_key) { ENV.fetch("PRIVATE_KEY", "0x" + "1" * 64) }
     let(:clob_client) { Polymarket::CLOBClient.new(clob_host: clob_host, chain_id: chain_id, key: private_key) }
@@ -17,7 +17,7 @@ RSpec.describe Polymarket do
     describe "#create_order" do
       let(:order_args) do
         Polymarket::OrderArgs.new(
-          token_id: "",
+          token_id: "0x1234567890123456789012345678901234567890",
           price: 0.5,
           size: 100,
           side: "BUY",
@@ -36,7 +36,7 @@ RSpec.describe Polymarket do
         # Mock the builder
         mock_builder = double("OrderBuilder")
         allow(mock_builder).to receive(:create_order).and_return({ order: "data" })
-        clob_client.instance_variable_set(:@builder, mock_builder)
+        clob_client.instance_variable_set(:@order_builder, mock_builder)
         
         result = clob_client.create_order(order_args)
         expect(result).to eq({ order: "data" })
@@ -79,7 +79,7 @@ RSpec.describe Polymarket do
         # Mock the builder
         mock_builder = double("OrderBuilder")
         allow(mock_builder).to receive(:create_market_order).and_return({ order: "data" })
-        clob_client.instance_variable_set(:@builder, mock_builder)
+        clob_client.instance_variable_set(:@order_builder, mock_builder)
         
         result = clob_client.create_market_order(order_args)
         expect(result).to eq({ order: "data" })
