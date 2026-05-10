@@ -48,17 +48,20 @@ module Polymarket
     end
 
     # `end_time` maps to the `end` query param (`end` is reserved in Ruby).
+    # `sort_by` maps to `sortBy`; `sort_direction` maps to `sortDirection` (Polymarket camelCase names).
+    # `event_id` maps to `eventId` (Polymarket camelCase — scopes the feed to a single Gamma event).
     def get_activity(user:, market: nil, event_id: nil, limit: nil, offset: nil, type: nil,
-                     start: nil, end_time: nil, sort_direction: nil)
+                     start: nil, end_time: nil, sort_by: nil, sort_direction: nil)
       params = {}
       params[:user] = user if user
       params[:market] = market if market
       params[:limit] = limit if limit
       params[:offset] = offset if offset
-      params[:event_id] = event_id if event_id
+      params[:eventId] = event_id if event_id
       params[:type] = type if type
       params[:start] = start if start
       params[:end] = end_time if end_time
+      params[:sortBy] = sort_by if sort_by
       params[:sortDirection] = sort_direction if sort_direction
 
       uri = URI.parse("#{@data_host}#{DataEndpoints::GET_ACTIVITY}")
